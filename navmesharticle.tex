@@ -1,0 +1,67 @@
+\documentclass[12pt,onecolumn]{article}
+
+\begin{document}
+
+\title{Automatic Navigation Mesh and Link Generation using Onion BSPs}
+\author{Stuart Golodetz}
+\date{}
+\maketitle
+
+\section*{Introduction}
+
+The representation of the walkable area of a 3D environment in such a way as to facilitate successful navigation by intelligent agents is an important problem in fields such as computer games \cite{?}, architectural walkthrough \cite{?} and robot navigation \cite{?}, and it has been extensively studied. As surveyed by Tozour \cite{tozour04}, there are a variety of common ways to represent such an environment: TODO
+
+Since their introduction by Greg Snook in 2000 \cite{snook00}, navigation meshes have proved to be a particularly successful representation due to TODO. As a result, they have seen heavy use in popular games such as TODO, and many games authors have contributed to their theoretical development \cite{?}. There has also been significant interest from academia, most notably TODO.
+
+One facet of using navigation meshes is how to build them in the first place, and various methods have been described in the literature. TODO: Survey the various methods.
+
+In this article, I describe my implementation of navigation mesh construction in my homemade \emph{hesperus} engine \cite{?}, based heavily on the approach of van Waveren in \cite{?}. The goal is to provide a helpful, implementation-focused introduction for those with no prior experience in the area. TODO: Give an overview of the method.
+
+\section*{Onion BSPs}
+
+TODO
+
+\section*{Mesh Generation}
+
+TODO
+
+\section*{Walk and Step Link Generation}
+
+TODO: Edge plane table construction, intervals, etc.
+
+\section*{Localisation and Movement}
+
+TODO
+
+\section*{Potential Extensions}
+
+\subsection*{Crouch Links}
+
+TODO
+
+\subsection*{Ladder Links}
+
+TODO
+
+\subsection*{Jump Links}
+
+TODO
+
+\section*{Evaluation}
+
+TODO
+
+\section*{Conclusions}
+
+TODO
+
+\section*{Acknowledgements}
+
+TODO
+
+\nocite{*}
+
+\bibliographystyle{plain}
+\bibliography{navmesh}
+
+\end{document}
