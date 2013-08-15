@@ -1,8 +1,10 @@
-\documentclass[12pt,onecolumn]{article}
+\documentclass[10pt,onecolumn]{article}
+
+\usepackage{url}
 
 \begin{document}
 
-\title{Automatic Navigation Mesh and Link Generation using Onion BSPs}
+\title{Automatic Navigation Mesh and Link Generation in Configuration Space}
 \author{Stuart Golodetz}
 \date{}
 \maketitle
@@ -11,13 +13,15 @@
 
 The representation of the walkable area of a 3D environment in such a way as to facilitate successful navigation by intelligent agents is an important problem in fields such as computer games \cite{?}, architectural walkthrough \cite{?} and robot navigation \cite{?}, and it has been extensively studied. As surveyed by Tozour \cite{tozour04}, there are a variety of common ways to represent such an environment: TODO
 
-Since their introduction by Greg Snook in 2000 \cite{snook00}, navigation meshes have proved to be a particularly successful representation due to TODO. As a result, they have seen heavy use in popular games such as TODO, and many games authors have contributed to their theoretical development \cite{?}. There has also been significant interest from academia, most notably TODO.
+Since their introduction by Greg Snook in 2000 \cite{snook00}, navigation meshes have proved to be a particularly successful approach due to their ability to represent the free space available around paths through the world (this is extremely useful because it provides the pathfinder with the information it needs to successfully avoid local obstacles). As a result, they have seen heavy use in popular games such as TODO, and many games authors have contributed to their theoretical development \cite{?}. There has also been significant interest from academia, most notably TODO.
 
-One facet of using navigation meshes is how to build them in the first place, and various methods have been described in the literature. TODO: Survey the various methods \cite{axelrod08,farnstrom06,hale11,hamm08,kallmann10,mcanlis08,oliva11,pettre05,ratcliff08,tozour02,vantoll11,vanwaveren01,wein05}.
+One facet of using navigation meshes is how to build them in the first place, and numerous methods have been described in the literature. An early approach due to Tozour \cite{tozour02} TODO. This was later improved on by Farnstrom \cite{farnstrom06}, who TODO. Hamm \cite{hamm08} generates a navigation mesh using an empirical method that involves sampling the environment to create a grid of points, identifying a subset of points both on the boundary of and within the environment, and connecting these points to form a mesh. Ratcliff \cite{ratcliff08} creates a navigation mesh by tessellating all walkable surfaces in the world, merging the results together to form suitable nodes and then computing links between neighbouring nodes. Van Toll \emph{et al.} \cite{vantoll11} build a navigation mesh for a multi-layer environment by constructing a mesh based on the medial axis for each layer and then connecting the medial axes by `opening' the connections between the layers.
 
-In this article, I describe my implementation of navigation mesh construction in my homemade \emph{hesperus} engine \cite{?}, based heavily on the approach of van Waveren in \cite{?}. The goal is to provide a helpful, implementation-focused introduction for those with no prior experience in the area. TODO: Give an overview of the method.
+TODO: Survey the various methods \cite{axelrod08,farnstrom06,hale11,hamm08,kallmann10,mcanlis08,oliva11,pettre05,ratcliff08,tozour02,vantoll11,vanwaveren01,wein05}.
 
-\section*{Onion BSPs}
+In this article, I describe the implementation of navigation mesh construction in my homemade \emph{hesperus} engine \cite{hesperus}, based heavily on the approach of van Waveren in \cite{vanwaveren01}. The goal is to provide a helpful, implementation-focused introduction for those with no prior experience in the area. TODO: Give an overview of the method.
+
+\section*{Configuration Space and Onion BSPs}
 
 TODO
 
