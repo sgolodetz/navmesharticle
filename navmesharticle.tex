@@ -1,4 +1,4 @@
-\documentclass[10pt,onecolumn]{article}
+\documentclass[10pt,twocolumn]{article}
 
 \usepackage{graphicx}
 \usepackage{subfigure}
@@ -35,17 +35,17 @@
 
 \section*{Introduction}
 
-The representation of the walkable area of a 3D environment in such a way as to facilitate successful navigation by intelligent agents is an important problem in fields such as computer games \cite{?}, architectural walkthrough \cite{?} and robot navigation \cite{?}, and it has been extensively studied. As surveyed by Tozour \cite{tozour04}, there are a variety of common ways to represent such an environment: TODO
+The representation of the walkable area of a 3D environment in such a way as to facilitate successful navigation by intelligent agents is an important problem in the computer games and artificial intelligence fields, and it has been extensively studied. As surveyed by Tozour \cite{tozour04}, there are a variety of common ways to represent such an environment, including regular grids, which support random-access lookup but do not translate easily into a 3D context, use a lot of memory and can yield aesthetically unpleasing paths; waypoint graphs -- connecting large numbers of nodes (often manually placed) with edges that imply walkability in the game world -- these were previously popular in games but are costly to build and tend to constrain agents to walking `on rails' between connected waypoints; space-filling volumes, which entail growing randomly-placed seeds to try and fill the free space in the level; and navigation meshes, that represent the walkable surface of a world explicitly using a polygonal mesh. Polygons within a navigation mesh are connected using links that imply the ability of the agent to walk/step/jump/etc.\ between them (see Figure~\ref{fig:1}).
 
 %---
-\stufigex{height=6cm}{blakeney-midramp-neg.png}{An example navigation mesh, rendered as a negative image to highlight the mesh and links.}{fig:1}{t}
+\stufigex{width=.9\linewidth}{blakeney-midramp-neg.png}{An example navigation mesh, rendered as a negative image to highlight the mesh and links.}{fig:1}{t}
 %---
 
-Since their introduction by Greg Snook in 2000 \cite{snook00}, navigation meshes have proved to be a particularly successful approach due to their ability to represent the free space available around paths through the world (this is extremely useful because it provides the pathfinder with the information it needs to successfully avoid local obstacles). As a result, they have seen heavy use in popular games such as TODO, and many games authors have contributed to their theoretical development \cite{?}. There has also been significant interest from academia, most notably TODO.
+Since their introduction by Greg Snook \cite{snook00}, navigation meshes have proved to be a particularly successful approach due to their ability to represent the free space available around paths through the world (this is extremely useful because it provides the pathfinder with the information it needs to successfully avoid local obstacles). As a result, they have seen widespread use in both games themselves, and popular games engines such as Source and Unreal, and many games authors have contributed to their theoretical development (most notably in the \emph{Game Programming Gems} and \emph{AI Game Programming Wisdom} book series). There has also been significant interest from researchers in academia (e.g.~see \cite{hale09,kallmann10,pettre05,vantoll11}).
 
-One facet of using navigation meshes is how to build them in the first place, and numerous methods have been described in the literature. An early approach due to Tozour \cite{tozour02} TODO. This was later improved on by Farnstrom \cite{farnstrom06}, who TODO. Hamm \cite{hamm08} generates a navigation mesh using an empirical method that involves sampling the environment to create a grid of points, identifying a subset of points both on the boundary of and within the environment, and connecting these points to form a mesh. Ratcliff \cite{ratcliff08} creates a navigation mesh by tessellating all walkable surfaces in the world, merging the results together to form suitable nodes and then computing links between neighbouring nodes. Van Toll \emph{et al.} \cite{vantoll11} build a navigation mesh for a multi-layer environment by constructing a mesh based on the medial axis for each layer and then connecting the medial axes by `opening' the connections between the layers.
+One facet of using navigation meshes is how to build them in the first place, and numerous methods have been described in the literature, of which a few examples are described here. An early approach due to Tozour \cite{tozour02} works by first determining the walkable polygons in a 3D environment by comparing their normals with the up vector, and then iteratively merging together as many polygons as possible using the Hertel-Mehlhorn algorithm \cite{hertel83,orourke94} and a $3 \rightarrow 2$ merging technique. Hamm \cite{hamm08} generates a navigation mesh using an empirical method that involves sampling the environment to create a grid of points, identifying a subset of points both on the boundary of and within the environment, and connecting these points to form a mesh. Ratcliff \cite{ratcliff08} creates a navigation mesh by tessellating all walkable surfaces in the world, merging the results together to form suitable nodes and then computing links between neighbouring nodes. Van Toll \emph{et al.} \cite{vantoll11} build a navigation mesh for a multi-layer environment by constructing a mesh based on the medial axis for each layer and then connecting the medial axes by `opening' the connections between the layers. The same authors later demonstrated how such a mesh could be dynamically modified \cite{vantoll12}. Mononen's open-source Recast library \cite{mononen09} first voxelizes the 3D environment before running a watershed transform \cite{beucher90,gonzalez02} on the walkable voxels and creating a mesh from the resulting partition of the walkable surface.
 
-TODO: Survey the various methods \cite{axelrod08,farnstrom06,hale11,hamm08,kallmann10,mcanlis08,mononen09,oliva11,pettre05,ratcliff08,tozour02,vantoll11,vanwaveren01,wein05}.
+%TODO: Survey the various methods \cite{axelrod08,farnstrom06,hale11,kallmann10,mcanlis08,mononen09,oliva11,pettre05,ratcliff08,vanwaveren01,wein05}.
 
 In this article, I describe the implementation of navigation mesh construction in my homemade \emph{hesperus} engine \cite{hesperus}, based heavily on the approach of van Waveren in \cite{vanwaveren01}. The goal is to provide a helpful, implementation-focused introduction for those with no prior experience in the area. TODO: Give an overview of the method.
 
@@ -79,19 +79,17 @@ TODO
 
 TODO
 
-\section*{Evaluation}
-
-TODO
-
 \section*{Conclusions}
 
-TODO
+In this article, I have illustrated how to generate navigation meshes at an implementation level using an approach based on the work of van Waveren in \cite{vanwaveren01}. Whilst there are many alternative techniques for navigation mesh construction, as described in the introduction, this configuration space approach is useful because it allows us to avoid the difficulties regarding clearance height that have to be dealt with by other approaches; it also means that each agent occupies a single point on the mesh, completely avoiding the problems caused by an agent straddling multiple mesh polygons.
+
+Navigation mesh \emph{generation}, however, is only part of the picture -- in a future article, I hope to write more about using navigation meshes for localisation, movement and path planning.
 
 \section*{Acknowledgements}
 
 TODO
 
-\nocite{*}
+%\nocite{*}
 
 \bibliographystyle{plain}
 \bibliography{navmesh}
