@@ -49,11 +49,21 @@ One facet of using navigation meshes is how to build them in the first place, an
 
 In this article, I describe the implementation of navigation mesh construction in my homemade \emph{hesperus} engine \cite{hesperus}, based heavily on the approach of van Waveren in \cite{vanwaveren01}. The goal is to provide a helpful, implementation-focused introduction for those with no prior experience in the area. TODO: Give an overview of the method.
 
-\section*{Configuration Space and Onion BSPs}
+\section*{Configuration Space}
+
+When planning the movement of intelligent agents (e.g.~robots), a \emph{configuration space} is the space of possible configurations in which an agent can validly exist. As a first example of what this concept means and when it can be useful, consider detecting the first point of collision between a plane and an axis-aligned bounding box (AABB) that is moving by translation only -- this might normally involve determining which vertex of the AABB is nearest to the plane and finding the point at which a half-ray oriented in the AABB's direction of movement and starting at that vertex would intersect the plane (see Figure~\ref{?}). The configuration space alternative is to initially expand the plane in the direction of its normal by a fixed amount so that the centre of the AABB touches the expanded plane precisely when the nearest vertex of the AABB touches the non-expanded plane (see Figure~\ref{?}). The first point of intersection can then be calculated by finding the point at which a half-ray starting at the centre of the AABB would touch the expanded plane (see Figure~\ref{?}) -- there is no longer a need to first determine which vertex is nearest to the plane. Put another way: by expanding the plane, we have created the space of possible configurations for the centre of the AABB, and thereby restricted our testing to making sure that the AABB's centre is always in a valid location.
+
+As explained in \cite{vanwaveren01}, the concept of configuration space can be extended to an entire 3D environment, allowing us to test an agent represented as an AABB against such an environment using only point-based (rather than AABB-based) intersection tests: this was the approach taken in the popular \emph{Quake III Arena} game. Starting with a \emph{brush-based} 3D environment (i.e.~one that is built up by combining instances of simple convex polyhedra such as cuboids, cylinders and cones -- a common approach in 3D world editors), a configuration space for agents with a specific AABB can be constructed by expanding each brush by an appropriate amount (see Figure~\ref{?}). Note that expanding each brush correctly can require the introduction of additional \emph{bevel} planes as described in \cite{vanwaveren01} (see Figure~\ref{?}).
+
+\section*{Onion BSPs}
+
+Having expanded the brushes as described above, it is possible to combine them into a brush that represents the entire environment using a constructive solid geometry (CSG) union operation (see Appendix~E of \cite{golodetz06}). The polygons of the combined brush so generated can then be used to build a binary space partitioning (BSP) tree of the environment (see Figure~\ref{?}) using a conventional BSP-building approach (see Appendix~D of \cite{golodetz06}). This BSP tree can be used to decide whether or not any given point in space is within a wall of the environment, which can be used for both discrete, point-based collision detection (`is this entity now in a wall as a result of its movement this frame?') and continuous collision detection (`does the line segment representing this entity's movement during this frame intersect a wall at any point?').
+
+However, as noted above, the configuration space we created by expanding the brushes is for a specific AABB -- that is, it will only work for entities of a particular size and in a particular pose. To support entities of different sizes, or ones that can change pose (e.g.~by crouching), we need to create a different type of BSP tree that this article will call an \emph{onion} BSP (for reasons that will be explained).
 
 TODO
 
-\section*{Mesh Generation}
+\section*{Basic Mesh Generation}
 
 TODO
 
