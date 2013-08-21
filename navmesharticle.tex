@@ -70,7 +70,7 @@ In this article, I describe the implementation of navigation mesh construction i
 %
 \begin{enumerate}
 \item Given a 3D environment made up of brushes (simple convex polyhedra, each consisting of a set of polygonal faces), and a set of axis-aligned bounding boxes (AABBs) used to represent the possible sizes of the agents that will navigate the environment, expand the brushes by appropriate amounts (see \S\ref{sec:configspace}) to create a set of expanded brushes for each AABB.
-\item Using constructive solid geometry (CSG) techniques, union the expanded brushes for each AABB together to form a combined brush. Filter the faces of each combined brush to find those that are \emph{walkable} (judged by comparing their face normals with the up vector). This gives us the polygons of a navigation mesh for each AABB, but without any links to indicate how agents should navigate between them. See \S\ref{sec:meshgen}.
+\item Using constructive solid geometry (CSG) techniques, union the expanded brushes for each AABB together to form a polygonal environment. Filter the polygons of the environment to find those that are \emph{walkable} (judged by comparing their face normals with the up vector). This gives us the polygons of a navigation mesh for each AABB, but without any links to indicate how agents should navigate between them. See \S\ref{sec:meshgen}.
 \item Generate walk and step links between the polygons of each navigation mesh (see \S\ref{sec:walkstep}) -- these indicate, respectively, that an agent can walk from one polygon of the mesh to another, or step up/down from one polygon to another. These links can be used to generate a graph for the purposes of path planning.
 \end{enumerate}
 %
@@ -99,7 +99,19 @@ TODO
 \section{Basic Mesh Generation}
 \label{sec:meshgen}
 
-TODO
+\subsection{Brush Unioning}
+
+TODO: See \emph{CSGUtil::union\_all}.
+
+\subsection{Finding Walkable Polygons}
+
+Given a set of polygons, finding polygons that are \emph{walkable} is straightforward: it suffices to compare the angle between each polygon's normal, $\mathbf{\hat{n}}$ and the up vector ($\mathbf{\hat{u}} = (0,0,1)^T$) to some predefined threshold. The angle can be computed using the dot product:
+%
+\[
+\theta = \cos^{-1} \left( \mathbf{\hat{n}} \cdot \mathbf{\hat{u}} \right)
+\]
+%
+We then keep precisely those polygons whose angle is less than or equal to the threshold. In the \emph{hesperus} engine, a suitable threshold for human characters was found to be $\pi/4$ (i.e.~45 degrees to the horizontal).
 
 \section{Walk and Step Link Generation}
 \label{sec:walkstep}
