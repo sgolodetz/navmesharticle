@@ -70,11 +70,11 @@ In this article, I describe the implementation of navigation mesh construction i
 %
 \begin{enumerate}
 \item Given a 3D environment made up of brushes (simple convex polyhedra, each consisting of a set of polygonal faces), and a set of axis-aligned bounding boxes (AABBs) used to represent the possible sizes of the agents that will navigate the environment, expand the brushes by appropriate amounts (see \S\ref{sec:configspace}) to create a set of expanded brushes for each AABB.
-\item Using constructive solid geometry (CSG) techniques, union the brushes for each AABB together to form a combined brush, then build a special kind of binary space partitioning (BSP) tree using the faces of the combined brushes for all the AABBs (see \S\ref{sec:onionbsp}). This tree can be used to decide which parts of the world are accessible by agents of each possible size.
-\item Collect the faces from every leaf of the BSP tree and separate them into buckets, one for each AABB (note that each face must have previously been annotated with the AABB to which it corresponds to make this possible). Filter TODO
+\item Using constructive solid geometry (CSG) techniques, union the expanded brushes for each AABB together to form a combined brush. Filter the faces of each combined brush to find those that are \emph{walkable} (judged by comparing their face normals with the up vector). This gives us the polygons of a navigation mesh for each AABB, but without any links to indicate how agents should navigate between them. See \S\ref{sec:meshgen}.
+\item Generate walk and step links between the polygons of each navigation mesh (see \S\ref{sec:walkstep}) -- these indicate, respectively, that an agent can walk from one polygon of the mesh to another, or step up/down from one polygon to another. These links can be used to generate a graph for the purposes of path planning.
 \end{enumerate}
 %
-The following sections look at each of these steps in detail.
+The following sections look at each of these steps in more detail.
 
 \section{Configuration Spaces}
 \label{sec:configspace}
@@ -82,6 +82,8 @@ The following sections look at each of these steps in detail.
 When planning the movement of intelligent agents (e.g.~robots), a \emph{configuration space} is the space of possible configurations in which an agent can validly exist. As a first example of what this concept means and when it can be useful, consider detecting the first point of collision between a plane and an AABB that is moving by translation only -- this might normally involve determining which vertex of the AABB is nearest to the plane and finding the point at which a half-ray oriented in the AABB's direction of movement and starting at that vertex would intersect the plane (see Figure~\ref{fig:aabbvsplane}(a)). The configuration space alternative is to initially expand the plane in the direction of its normal by a fixed amount so that the centre of the AABB touches the expanded plane precisely when the nearest vertex of the AABB touches the non-expanded plane (see Figure~\ref{fig:aabbvsplane}(b)). The first point of intersection can then be calculated by finding the point at which a half-ray starting at the centre of the AABB would touch the expanded plane (see Figure~\ref{fig:aabbvsplane}(c)) -- there is no longer a need to first determine which vertex is nearest to the plane. Put another way: by expanding the plane, we have created the space of possible configurations for the centre of the AABB, and thereby restricted our testing to making sure that the AABB's centre is always in a valid location.
 
 As explained in \cite{vanwaveren01}, the concept of configuration space can be extended to an entire 3D environment, allowing us to test an agent represented as an AABB against such an environment using only point-based (rather than AABB-based) intersection tests: this was the approach taken in the popular \emph{Quake III Arena} game. Starting with a \emph{brush-based} 3D environment (i.e.~one that is built up by combining instances of simple convex polyhedra such as cuboids, cylinders and cones -- a common approach in 3D world editors), a configuration space for agents with a specific AABB can be constructed by expanding each brush by an appropriate amount (see Figure~\ref{?}). Note that expanding each brush correctly can require the introduction of additional \emph{bevel} planes as described in \cite{vanwaveren01} (see Figure~\ref{?}).
+
+\iffalse
 
 \section{Onion BSPs}
 \label{sec:onionbsp}
@@ -92,11 +94,15 @@ However, as noted above, the configuration space we created by expanding the bru
 
 TODO
 
+\fi
+
 \section{Basic Mesh Generation}
+\label{sec:meshgen}
 
 TODO
 
 \section{Walk and Step Link Generation}
+\label{sec:walkstep}
 
 TODO: Edge plane table construction, intervals, etc.
 
