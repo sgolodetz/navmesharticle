@@ -113,10 +113,23 @@ Given a set of polygons, finding polygons that are \emph{walkable} is straightfo
 %
 We then keep precisely those polygons whose angle is less than or equal to the threshold. In the \emph{hesperus} engine, a suitable threshold for human characters was found to be $\pi/4$ (i.e.~45 degrees to the horizontal).
 
-\section{Walk and Step Link Generation}
+\section{Walk and Step Links}
 \label{sec:walkstep}
 
-TODO: Edge plane table construction, intervals, etc.
+To generate simple links between walkable polygons in a navigation mesh, the general strategy is as follows:
+%
+\begin{enumerate}
+\item We first create an \emph{edge plane table} that maps each vertical plane through one or more navigation polygon edges to two sets of edges that lie in the plane (edges in one set are oriented in the same direction as the plane, edges in the other have the opposite orientation).
+\item For each plane in the table and for each pair of opposing edges for that plane, we check to see whether any links need to be created. This is done by projecting the opposing edges into the plane and calculating the intervals (if any) in which the various types of link need to be created.
+\end{enumerate}
+
+\subsection{The Edge Plane Table}
+
+TODO
+
+\subsection{Link Creation}
+
+TODO
 
 \section{Potential Extensions}
 
