@@ -101,11 +101,15 @@ TODO
 
 \subsection{Brush Unioning}
 
-TODO: See \emph{CSGUtil::union\_all}.
+%TODO: See \emph{CSGUtil::union\_all}.
+
+Having expanded the brushes of a brush-based environment to construct a configuration space for an AABB in the manner described, the next step is to union the expanded brushes together to generate a set of polygons that represent the expanded environment as a whole. These polygons can then be processed further to construct a navigation mesh.
+
+In conceptual terms, the process of brush unioning is relatively simple: given an input set of brushes, each of which consists of a set of (outward-facing) polygonal faces, it suffices to clip each brush face to all the other brushes within range of its own brush in the environment (see Figure~\ref{?}). From an implementation perspective, a convenient way to do this is to build a binary space partitioning (BSP) tree for each brush and clip each face to the trees of the other brushes. The high-level implementation of this process can be found in Listing~\ref{?} and full source code is available online \cite{hesperus}. The end result is a set of polygons that represent the expanded environment.
 
 \subsection{Finding Walkable Polygons}
 
-Given a set of polygons, finding polygons that are \emph{walkable} is straightforward: it suffices to compare the angle between each polygon's normal, $\mathbf{\hat{n}}$ and the up vector ($\mathbf{\hat{u}} = (0,0,1)^T$) to some predefined threshold. The angle can be computed using the dot product:
+Given the set of polygons generated in the previous section, finding those polygons that are \emph{walkable} is straightforward: it suffices to compare the angle between each polygon's normal, $\mathbf{\hat{n}}$ and the up vector ($\mathbf{\hat{u}} = (0,0,1)^T$) to some predefined threshold. The angle can be computed using the dot product:
 %
 \[
 \theta = \cos^{-1} \left( \mathbf{\hat{n}} \cdot \mathbf{\hat{u}} \right)
