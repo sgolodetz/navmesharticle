@@ -1,0 +1,28 @@
+function union_all
+:	(brushes: Vector<Brush>) $\to$ List<Polygon>
+
+var result: List<Polygon>;
+
+// Build a tree for each brush.
+var trees: Vector<BSPTree> :=
+  map(build_tree, brushes);
+
+// Determine which brushes can interact.
+var brushesInteract: Vector<Vector<Bool>>;
+for each $b_i$, $b_j \in$ brushes
+  if j == i then
+    brushesInteract(i, j) := false;
+  else
+    brushesInteract(i, j) := in_range($b_i$, $b_j$);
+
+// Clip each polygon to the tree of each brush
+// within range of its own brush.
+for each $b_i \in$ brushes
+  for each $f \in$ faces($b_i$)
+    var fs: List<Polygon> := [f];
+    for each $b_j \in$ brushes
+      if brushesInteract(i, j) then
+        fs := clip_polygons(fs, trees(j), $i < j$);
+    result.splice(result.end(), fs);
+
+return result;

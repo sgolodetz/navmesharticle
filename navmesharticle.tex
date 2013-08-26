@@ -1,8 +1,22 @@
 \documentclass[10pt,twocolumn]{article}
 
+\usepackage{color}
+\usepackage{float}
 \usepackage{graphicx}
+\usepackage{listings}
 \usepackage{subfigure}
 \usepackage{url}
+
+%%%%%%%%%%%%%%%
+%%% Colours %%%
+%%%%%%%%%%%%%%%
+
+\definecolor{darkgreen}{rgb}{0, 0.6, 0}
+\definecolor{lightgrey}{gray}{0.9}
+
+%%%%%%%%%%%
+% Figures %
+%%%%%%%%%%%
 
 \newcommand{\stufigex}[5]					% images with specified placement
 {
@@ -25,6 +39,83 @@
 	\end{center}
 	\end{figure*}
 }
+
+%%%%%%%%%%%%%%%%%
+% Code Listings %
+%%%%%%%%%%%%%%%%%
+
+% Create a new type of float (called a stulisting) for listings
+\floatstyle{ruled}
+\newfloat{stulisting}{thp}{lop}
+\floatname{stulisting}{Listing}
+
+% Setup before using the listings package
+\renewcommand{\lstlistingname}{\textbf{Listing}}
+\def\thelstlisting{\textbf{\arabic{lstlisting}}}
+
+\lstdefinelanguage{Pseudocode}{
+morekeywords={and,assert,break,case,continue,default,down,each,else,for,function,if,not,null,or,rangeswitch,ref,return,switch,then,this,throw,to,up,var,while},
+sensitive=true,
+morecomment=[l]{//},
+morecomment=[s]{/*}{*/}
+}
+
+\lstdefinestyle{Default}{
+abovecaptionskip=0.5cm,
+basicstyle=\scriptsize\ttfamily,
+belowcaptionskip=0.5cm,
+belowskip=0.5cm,
+columns=fixed,
+%commentstyle=\color{darkgreen},
+commentstyle=\textit, % changed from the thesis (green text looks unprofessional in a journal paper)
+language=Pseudocode,
+%numbers=left,
+numbers=none, % changed from the thesis (line numbers are less relevant here)
+numbersep=5pt,
+numberstyle=\tiny,
+mathescape=true,
+showstringspaces=false,
+stepnumber=1,
+tabsize=4
+}
+
+\lstdefinestyle{Snippet}{
+abovecaptionskip=0.5cm,
+aboveskip=0.5cm,
+basicstyle=\small\ttfamily,
+belowcaptionskip=0.5cm,
+belowskip=0.5cm,
+columns=fixed,
+commentstyle=\color{darkgreen},
+frame=lines,
+keywordstyle=\small\bfseries,
+language=Pseudocode,
+numbers=none,
+mathescape=true,
+showstringspaces=false,
+stepnumber=1,
+tabsize=4
+}
+
+% For C++ function prototypes
+\lstdefinestyle{Prototype}{
+abovecaptionskip=0.5cm,
+basicstyle=\small\ttfamily,
+belowcaptionskip=0.5cm,
+belowskip=0.5cm,
+columns=fixed,
+commentstyle=\color{darkgreen},
+language=C++,
+numbers=none,
+mathescape=true,
+showstringspaces=false,
+stepnumber=1,
+tabsize=4
+}
+
+%%%%%%%%%%%%%%%%%
+% Main Document %
+%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
@@ -101,11 +192,17 @@ TODO
 
 \subsection{Brush Unioning}
 
-%TODO: See \emph{CSGUtil::union\_all}.
-
 Having expanded the brushes of a brush-based environment to construct a configuration space for an AABB in the manner described, the next step is to union the expanded brushes together to generate a set of polygons that represent the expanded environment as a whole. These polygons can then be processed further to construct a navigation mesh.
 
-In conceptual terms, the process of brush unioning is relatively simple: given an input set of brushes, each of which consists of a set of (outward-facing) polygonal faces, it suffices to clip each brush face to all the other brushes within range of its own brush in the environment (see Figure~\ref{?}). From an implementation perspective, a convenient way to do this is to build a binary space partitioning (BSP) tree for each brush and clip each face to the trees of the other brushes. The high-level implementation of this process can be found in Listing~\ref{?} and full source code is available online \cite{hesperus}. The end result is a set of polygons that represent the expanded environment.
+In conceptual terms, the process of brush unioning is relatively simple: given an input set of brushes, each of which consists of a set of (outward-facing) polygonal faces, it suffices to clip each brush face to all the other brushes within range of its own brush in the environment (see Figure~\ref{?}). From an implementation perspective, a convenient way to do this is to build a binary space partitioning (BSP) tree for each brush and clip each face to the trees of the other brushes. The high-level implementation of this process can be found in Listing~\ref{code:brush-unioning} and full source code is available online \cite{hesperus}. The end result is a set of polygons that represent the expanded environment.
+
+%---
+\begin{stulisting}[t]
+\caption{Brush Unioning}
+\label{code:brush-unioning}
+\lstinputlisting[style=Default]{brush-unioning.lst}
+\end{stulisting}
+%---
 
 \subsection{Finding Walkable Polygons}
 
