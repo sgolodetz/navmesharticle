@@ -1,0 +1,19 @@
+function build_edge_plane_table
+:	(walkablePolygons: List<Polygon>) $\to$
+	Map<Plane,EdgeRefsPair,PlaneOrdering>
+
+var ept: Map<Plane,EdgeRefsPair,PlaneOrdering>;
+
+for each $\mbox{poly} \in$ walkablePolygons
+  for each $p_1 \in$ vertices(poly)
+    var $p_2$: Vec3 := next_vertex(poly,$p_1$);
+    var plane: Plane := make_vertical_plane($p_1$,$p_2$);
+    var canon: Plane := plane.make_canonical();
+    var sameFacing: bool :=
+      plane.normal().dot(canon.normal()) > 0;
+    if sameFacing then
+      ept(canon).sameFacing.add(EdgeRef(poly,$p_1$));
+    else
+      ept(canon).oppFacing.add(EdgeRef(poly,$p_1$));
+
+return ept;

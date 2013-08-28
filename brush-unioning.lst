@@ -8,7 +8,7 @@ var trees: Vector<BSPTree> :=
   map(build_tree, brushes);
 
 // Determine which brushes can interact.
-var brushesInteract: Vector<Vector<Bool>>;
+var brushesInteract: Vector<Vector<bool>>;
 for each $b_i$, $b_j \in$ brushes
   if j == i then
     brushesInteract(i, j) := false;

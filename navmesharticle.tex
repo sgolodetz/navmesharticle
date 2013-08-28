@@ -226,7 +226,15 @@ To generate simple links between walkable polygons in a navigation mesh, the gen
 
 \subsection{Edge Plane Table Construction}
 
-The edge plane table is a map of type $\mbox{Plane} \to (\{\mbox{Edge}\},\{\mbox{Edge}\})$. To construct it, we proceed as shown in Listing~\ref{?}. For each edge of a walkable polygon, we first build the vertical plane passing through it and then add it to the table based on its facing with regard to the `canonical' vertical plane through the edge. This has the effect of separating the edges of walkable polygons into two sets on each vertical plane that can then be checked against each other in a pairwise manner to create navigation links -- see Figure~\ref{?} for an example. A few details are needed to make this work:
+%---
+\begin{stulisting}[t]
+\caption{Edge Plane Table Construction}
+\label{code:ept-construction}
+\lstinputlisting[style=Default]{ept-construction.lst}
+\end{stulisting}
+%---
+
+The edge plane table is a map of type $\mbox{Plane} \to (\{\mbox{Edge}\},\{\mbox{Edge}\})$. To construct it, we proceed as shown in Listing~\ref{code:ept-construction}. For each edge of a walkable polygon, we first build the vertical plane passing through it and then add it to the table based on its facing with regard to the `canonical' vertical plane through the edge. This has the effect of separating the edges of walkable polygons into two sets on each vertical plane that can then be checked against each other in a pairwise manner to create navigation links -- see Figure~\ref{?} for an example. A few details are needed to make this work:
 %
 \begin{enumerate}
 
