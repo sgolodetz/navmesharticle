@@ -9,7 +9,7 @@ var trees: Vector<BSPTree> :=
 
 // Determine which brushes can interact.
 var brushesInteract: Vector<Vector<bool>>;
-for each $b_i$, $b_j \in$ brushes
+for each $b_i$, $b_j$ $\in$ brushes
   if j == i then
     brushesInteract(i, j) := false;
   else
@@ -17,10 +17,10 @@ for each $b_i$, $b_j \in$ brushes
 
 // Clip each polygon to the tree of each brush
 // within range of its own brush.
-for each $b_i \in$ brushes
-  for each $f \in$ faces($b_i$)
+for each $b_i$ $\in$ brushes
+  for each $f$ $\in$ faces($b_i$)
     var fs: List<Polygon> := [f];
-    for each $b_j \in$ brushes
+    for each $b_j$ $\in$ brushes
       if brushesInteract(i, j) then
         fs := clip_polygons(fs, trees(j), $i < j$);
     result.splice(result.end(), fs);

@@ -1,5 +1,6 @@
 \documentclass[10pt,twocolumn]{article}
 
+\usepackage{bold-extra}
 \usepackage{color}
 \usepackage{float}
 \usepackage{graphicx}
@@ -252,9 +253,17 @@ Normalising this to give $\mathbf{\hat{n}} = \mathbf{n} / \left|\mathbf{n}\right
 
 \item \emph{Canonical Plane Determination}. Given a plane with equation $ax + by + cz - d = 0$, we define the `canonical' form of this plane to be the one where the first of $a$, $b$ or $c$ to be non-zero is positive. Thus, the canonical form of both $0x + 1y - 1z - 23 = 0$ and $0x - 1y + 1z + 23 = 0$ would be $0x + 1y - 1z - 23 = 0$. Note that a plane is either already in canonical form, or can be canonicalised straightforwardly by negating all of its coefficients.
 
-\item \emph{Plane Ordering}. In order to use planes as the key for the edge plane table, we need to define a suitable way of ordering them. This can be done using a variant of the approach described in \cite{salesin92}. In practice, the ordering was found to be easier to debug (although somewhat less efficient) if implemented as shown in Listing~\ref{?}.
+\item \emph{Plane Ordering}. In order to use planes as the key for the edge plane table, we need to define a suitable way of ordering them. This can be done using a variant of the approach described in \cite{salesin92}. In practice, the ordering was found to be easier to debug (although somewhat less efficient) if implemented as shown in Listing~\ref{code:plane-ordering}.
 
 \end{enumerate}
+
+%---
+\begin{stulisting}[t]
+\caption{Plane Ordering}
+\label{code:plane-ordering}
+\lstinputlisting[style=Default]{plane-ordering.lst}
+\end{stulisting}
+%---
 
 \subsection{Link Creation}
 

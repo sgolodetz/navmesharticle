@@ -4,7 +4,7 @@ function build_edge_plane_table
 
 var ept: Map<Plane,EdgeRefsPair,PlaneOrdering>;
 
-for each $\mbox{poly} \in$ walkablePolygons
+for each poly $\in$ walkablePolygons
   for each $p_1 \in$ vertices(poly)
     var $p_2$: Vec3 := next_vertex(poly,$p_1$);
     var plane: Plane := make_vertical_plane($p_1$,$p_2$);
