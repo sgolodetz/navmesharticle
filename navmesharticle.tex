@@ -127,10 +127,10 @@ tabsize=4
 
 \section{Introduction}
 
-The representation of the walkable area of a 3D environment in such a way as to facilitate successful navigation by intelligent agents is an important problem in the computer games and artificial intelligence fields, and it has been extensively studied. As surveyed by Tozour \cite{tozour04}, there are a variety of common ways to represent such an environment, including regular grids, which support random-access lookup but do not translate easily into a 3D context, use a lot of memory and can yield aesthetically unpleasing paths; waypoint graphs -- connecting large numbers of nodes (often manually placed) with edges that imply walkability in the game world -- these were previously popular in games but are costly to build and tend to constrain agents to walking `on rails' between connected waypoints; space-filling volumes, which entail growing randomly-placed seeds to try and fill the free space in the level; and navigation meshes, that represent the walkable surface of a world explicitly using a polygonal mesh. Polygons within a navigation mesh are connected using links that imply the ability of the agent to walk/step/jump/etc.\ between them (see Figure~\ref{fig:1}).
+The representation of the walkable area of a 3D environment in such a way as to facilitate successful navigation by intelligent agents is an important problem in the computer games and artificial intelligence fields, and it has been extensively studied. As surveyed by Tozour \cite{tozour04}, there are a variety of common ways to represent such an environment, including regular grids, which support random-access lookup but do not translate easily into a 3D context, use a lot of memory and can yield aesthetically unpleasing paths; waypoint graphs -- connecting large numbers of nodes (often manually placed) with edges that imply walkability in the game world -- these were previously popular in games but are costly to build and tend to constrain agents to walking `on rails' between connected waypoints; space-filling volumes, which entail growing randomly-placed seeds to try and fill the free space in the level; and navigation meshes, that represent the walkable surface of a world explicitly using a polygonal mesh. Polygons within a navigation mesh are connected using links that imply the ability of the agent to walk/step/jump/etc.\ between them (see Figure~\ref{fig:navmeshexample}).
 
 %---
-\stufigex{width=.9\linewidth}{blakeney-upperramp-clearer.png}{An example navigation mesh and its links: cyan = walk link; magenta = step up link; yellow = step down link.}{fig:1}{t}
+\stufigex{width=.9\linewidth}{blakeney-upperramp-clearer.png}{An example navigation mesh and its links: cyan = walk link; magenta = step up link; yellow = step down link.}{fig:navmeshexample}{t}
 %---
 
 Since their introduction by Greg Snook \cite{snook00}, navigation meshes have proved to be a particularly successful approach due to their ability to represent the free space available around paths through the world (this is extremely useful because it provides the pathfinder with the information it needs to successfully avoid local obstacles). As a result, they have seen widespread use in both games themselves, and popular games engines such as Source and Unreal, and many games authors have contributed to their theoretical development (most notably in the \emph{Game Programming Gems} and \emph{AI Game Programming Wisdom} book series). There has also been significant interest from researchers in academia (e.g.~see \cite{hale09,kallmann10,pettre05,vantoll11}).
@@ -277,17 +277,23 @@ TODO
 
 \section{Potential Extensions}
 
+At present, only walk and step links are implemented in \emph{hesperus}, but there are various additional links that it would be helpful to add.
+
 \subsection{Crouch Links}
 
-TODO
+One obvious extension is to add \emph{crouch} links -- these are links that tell agents when they need to crouch in order to traverse low areas (e.g.~a low archway or a pipe). As the example in Figure~\ref{fig:crouchlinks} illustrates, these are inter-mesh links; they should be created so as to link the standing and crouching meshes for an agent at the boundary of areas that can be traversed on the crouching mesh but not on the standing one. Assuming that the AABBs for the two meshes differ only in their heights (as is the case in the example), one way of automatically detecting crouch links would be to match edges on the standing mesh that do not cause any walk or step links to be created with edges in the same plane on the crouching mesh that do.
+
+%---
+\stufigex{width=.9\linewidth}{crouchlinks.png}{Creating crouch links between navigation meshes can allow tall characters to pass through low areas. Here, crouch links should be created between the standing (green) and crouching (red) meshes to allow agents to traverse this low archway.}{fig:crouchlinks}{t}
+%---
 
 \subsection{Ladder Links}
 
-TODO
+The addition of ladder links (indicating that an agent can travel from one floor to another using a ladder) is not conceptually very difficult, but it requires tool support. In \emph{hesperus}, the map editor would need to be augmented to handle ladders and other static entities; when placing a ladder, it would then be a simple matter to create a link at either end of the ladder to represent travel in each direction. It should be noted that \emph{traversing} ladder links is significantly more complicated than traversing walk or step links, because it takes time to climb or descend a ladder and someone may be coming the other way, but traversal is beyond the scope of this article.
 
 \subsection{Jump Links}
 
-TODO
+A third type of extremely useful link would be the jump link -- these are used to indicate places at which an agent can jump to reach another part of the navigation mesh. Calculating jump links can be somewhat costly because it involves simulating the agent making jumps to determine whether or not they are possible. In our case, the situation is made slightly easier because we are working in configuration space and can avoid worrying about clearance, but general-purpose jump links are still non-trivial to generate automatically. One easy type of jump link that could be generated immediately would be vertical jumps -- these can be generated in the same way as step up links, but using a larger height threshold.
 
 \section{Conclusions}
 
@@ -297,7 +303,7 @@ Navigation mesh \emph{generation}, however, is only part of the picture -- in a 
 
 \section{Acknowledgements}
 
-TODO
+As always, I would like to thank the Overload team for reviewing and helping to improve this article.
 
 %\nocite{*}
 
