@@ -220,13 +220,33 @@ We then keep precisely those polygons whose angle is less than or equal to the t
 To generate simple links between walkable polygons in a navigation mesh, the general strategy is as follows:
 %
 \begin{enumerate}
-\item We first create an \emph{edge plane table} that maps each vertical plane through one or more navigation polygon edges to two sets of edges that lie in the plane (edges in one set are oriented in the same direction as the plane, edges in the other have the opposite orientation).
+\item We first create an \emph{edge plane table} that maps each vertical plane through one or more walkable polygon edges to two sets of edges that lie in the plane (edges in one set are oriented in the same direction as a `canonical' plane; edges in the other have the opposite orientation).
 \item For each plane in the table and for each pair of opposing edges for that plane, we check to see whether any links need to be created. This is done by projecting the opposing edges into the plane and calculating the intervals (if any) in which the various types of link need to be created.
 \end{enumerate}
 
-\subsection{The Edge Plane Table}
+\subsection{Edge Plane Table Construction}
 
-TODO
+The edge plane table is a map of type $\mbox{Plane} \to (\{\mbox{Edge}\},\{\mbox{Edge}\})$. To construct it, we proceed as shown in Listing~\ref{?}. For each edge of a walkable polygon, we first build the vertical plane passing through it and then add it to the table based on its facing with regard to the `canonical' vertical plane through the edge. This has the effect of separating the edges of walkable polygons into two sets on each vertical plane that can then be checked against each other in a pairwise manner to create navigation links -- see Figure~\ref{?} for an example. A few details are needed to make this work:
+%
+\begin{enumerate}
+
+\item \emph{Vertical Plane Construction}. The edge is necessarily non-vertical (because it belongs to a walkable polygon), so the normal vector of the vertical plane can be calculated straightforwardly using a cross-product. If the endpoints of the edge are $\mathbf{p_1}$ and $\mathbf{p_2}$, and $\mathbf{\hat{u}}$ is once again the up vector, then the desired normal can be calculated as:
+%
+\[
+\mathbf{n} = (\mathbf{p_2} - \mathbf{p_1}) \times \mathbf{\hat{u}}
+\]
+%
+Normalising this to give $\mathbf{\hat{n}} = \mathbf{n} / \left|\mathbf{n}\right|$, the equation of the desired plane is then:
+%
+\[
+\mathbf{\hat{n}} \cdot \mathbf{x} = \mathbf{\hat{n}} \cdot \mathbf{p_1}
+\]
+
+\item \emph{Canonical Plane Determination}. Given a plane with equation $ax + by + cz - d = 0$, we define the `canonical' form of this plane to be the one where the first of $a$, $b$ or $c$ to be non-zero is positive. Thus, the canonical form of both $0x + 1y - 1z - 23 = 0$ and $0x - 1y + 1z + 23 = 0$ would be $0x + 1y - 1z - 23 = 0$. Note that a plane is either already in canonical form, or can be canonicalised straightforwardly by negating all of its coefficients.
+
+\item \emph{Plane Ordering}. In order to use planes as the key for the edge plane table, we need to define a suitable way of ordering them. This can be done using a variant of the approach described in \cite{salesin92}. In practice, the ordering was found to be easier to debug (although somewhat less efficient) if implemented as shown in Listing~\ref{?}.
+
+\end{enumerate}
 
 \subsection{Link Creation}
 
