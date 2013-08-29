@@ -192,7 +192,7 @@ The following sections look at each of these steps in more detail.
 
 When planning the movement of intelligent agents (e.g.~robots), a \emph{configuration space} is the space of possible configurations in which an agent can validly exist. As a first example of what this concept means and when it can be useful, consider detecting the first point of collision between a plane and an AABB that is moving by translation only -- this might normally involve determining which vertex of the AABB is nearest to the plane and finding the point at which a half-ray oriented in the AABB's direction of movement and starting at that vertex would intersect the plane (see Figure~\ref{fig:aabbvsplane}(a)). The configuration space alternative is to initially expand the plane in the direction of its normal by a fixed amount so that the centre of the AABB touches the expanded plane precisely when the nearest vertex of the AABB touches the non-expanded plane (see Figure~\ref{fig:aabbvsplane}(b)). The first point of intersection can then be calculated by finding the point at which a half-ray starting at the centre of the AABB would touch the expanded plane (see Figure~\ref{fig:aabbvsplane}(c)) -- there is no longer a need to first determine which vertex is nearest to the plane. Put another way: by expanding the plane, we have created the space of possible configurations for the centre of the AABB, and thereby restricted our testing to making sure that the AABB's centre is always in a valid location.
 
-As explained in \cite{vanwaveren01}, the concept of configuration space can be extended to an entire 3D environment, allowing us to test an agent represented as an AABB against such an environment using only point-based (rather than AABB-based) intersection tests: this was the approach taken in the popular \emph{Quake III Arena} game. Starting with a \emph{brush-based} 3D environment (i.e.~one that is built up by combining instances of simple convex polyhedra such as cuboids, cylinders and cones -- a common approach in 3D world editors), a configuration space for agents with a specific AABB can be constructed by expanding each brush by an appropriate amount (see Figure~\ref{fig:configspace}(a) and (b)). Note that expanding each brush correctly can require the introduction of additional \emph{bevel} planes as described in \cite{vanwaveren01} (see Figure~\ref{fig:configspace}(c)).
+As explained in \cite{vanwaveren01}, the concept of configuration space can be extended to an entire 3D environment, allowing us to test an agent represented as an AABB against such an environment using only point-based (rather than AABB-based) intersection tests: this was the approach taken in the popular \emph{Quake III Arena} game. Starting with a \emph{brush-based} 3D environment (i.e.~one that is built up by combining instances of simple convex polyhedra such as cuboids, cylinders and cones -- a common approach in 3D world editors), a configuration space for agents with a specific AABB can be constructed by expanding each brush by an appropriate amount (see Figures~\ref{fig:configspace}(a) and \ref{fig:configspace}(b)). Note that expanding each brush correctly can require the introduction of additional \emph{bevel} planes as described in \cite{vanwaveren01} (see Figure~\ref{fig:configspace}(c)).
 
 \section{Basic Mesh Generation}
 \label{sec:meshgen}
@@ -281,6 +281,25 @@ Normalising this to give $\mathbf{\hat{n}} = \mathbf{n} / \left|\mathbf{n}\right
 \end{stulisting}
 %---
 
+%---
+\begin{stusubfig}{!t}
+	\subfigure[]
+	{\includegraphics[width=.3\linewidth]{linkcreation-a}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{\includegraphics[width=.3\linewidth]{linkcreation-b}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[]
+	{\includegraphics[width=.3\linewidth]{linkcreation-c}}%
+\caption{Creating links between edges: in (a), a step down link is created from $e$ to $f$ in the region labelled sdI, and a step up link is created in the region labelled suI; in (b), a step up link is created from $e$ to $f$ in the region labelled xOverlap; in (c), a step down link is created from $e$ to $f$ in the region labelled xOverlap. The remaining case of parallel edges leading to a walk link is not shown.}
+\label{fig:linkcreation}
+\end{stusubfig}
+%---
+
 To generate walk and step links, we transform each ordered pair of opposing edges that lie in the same (canonical) plane into a 2D (orthonormal) coordinate system on the plane, and then determine the intervals (if any) in which links need to be created. A suitable 2D coordinate system for a plane $\mathbf{\hat{n}} \cdot \mathbf{x} - d = 0$ can be generated as follows. To determine a suitable origin $\mathbf{o'}$ for our coordinate system, we find the point on the plane that lies nearest to the world origin $\mathbf{0}$: this is simply $d\mathbf{\hat{n}}$. Given that the plane is vertical, suitable axis vectors for our coordinate system can be defined as:
 %
 \[
@@ -311,7 +330,7 @@ m_e = \frac{e'_{2y} - e'_{1y}}{e'_{2x} - e'_{1x}}
 c_e = e'_{1y} - m_e * e'_{1x}
 \]
 %
-Based on a comparison of the gradients, we then create the link segments in the plane as shown in Listing~\ref{code:linksegment-calculation} and Figure~\ref{?}. The endpoints $\mathbf{\ell_1}$ and $\mathbf{\ell_2}$ of each link segment can be straightforwardly transformed back into world space to create the actual links as follows:
+Based on a comparison of the gradients, we then create the link segments in the plane as shown in Listing~\ref{code:linksegment-calculation} and Figure~\ref{fig:linkcreation}. The endpoints $\mathbf{\ell_1}$ and $\mathbf{\ell_2}$ of each link segment can be straightforwardly transformed back into world space to create the actual links as follows:
 %
 \[
 \mathbf{\ell_n} \mapsto \mathbf{o'} + \ell_{nx} * \mathbf{i'} + \ell_{ny} * \mathbf{j'}
