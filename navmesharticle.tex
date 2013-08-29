@@ -273,6 +273,14 @@ Normalising this to give $\mathbf{\hat{n}} = \mathbf{n} / \left|\mathbf{n}\right
 
 \subsection{Link Creation}
 
+%---
+\begin{stulisting}[!t]
+\caption{Link Segment Calculation}
+\label{code:linksegment-calculation}
+\lstinputlisting[style=Default]{linksegment-calculation.lst}
+\end{stulisting}
+%---
+
 To generate walk and step links, we transform each ordered pair of opposing edges that lie in the same (canonical) plane into a 2D (orthonormal) coordinate system on the plane, and then determine the intervals (if any) in which links need to be created. A suitable 2D coordinate system for a plane $\mathbf{\hat{n}} \cdot \mathbf{x} - d = 0$ can be generated as follows. To determine a suitable origin $\mathbf{o'}$ for our coordinate system, we find the point on the plane that lies nearest to the world origin $\mathbf{0}$: this is simply $d\mathbf{\hat{n}}$. Given that the plane is vertical, suitable axis vectors for our coordinate system can be defined as:
 %
 \[
@@ -303,7 +311,11 @@ m_e = \frac{e'_{2y} - e'_{1y}}{e'_{2x} - e'_{1x}}
 c_e = e'_{1y} - m_e * e'_{1x}
 \]
 %
-Based on a comparison of the gradients, we then create the links as shown in Listing~\ref{?} and Figure~\ref{?}.
+Based on a comparison of the gradients, we then create the link segments in the plane as shown in Listing~\ref{code:linksegment-calculation} and Figure~\ref{?}. The endpoints $\mathbf{\ell_1}$ and $\mathbf{\ell_2}$ of each link segment can be straightforwardly transformed back into world space to create the actual links as follows:
+%
+\[
+\mathbf{\ell_n} \mapsto \mathbf{o'} + \ell_{nx} * \mathbf{i'} + \ell_{ny} * \mathbf{j'}
+\]
 
 \section{Potential Extensions}
 

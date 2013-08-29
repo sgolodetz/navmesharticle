@@ -1,0 +1,61 @@
+function calculate_link_segments
+:	($\mathbf{e'_1}$: Vec2; $\mathbf{e'_2}$: Vec2; $\mathbf{f'_1}$: Vec2; $\mathbf{f'_2}$: Vec2;
+	 xOverlap: Interval) $\to$ LinkSegments
+
+xO $\equiv$ xOverlap;
+var result: LinkSegments;
+var $m_e$: double := ($e'_{2y} - e'_{1y}$) / ($e'_{2x} - e'_{1x}$);
+var $m_f$: double := ($f'_{2y} - f'_{1y}$) / ($f'_{2x} - f'_{1x}$);
+var $c_e$: double := $e'_{1y} - m_e * e'_{1x}$;
+var $c_f$: double := $f'_{1y} - m_f * f'_{1x}$;
+var $\Delta m$, $\Delta c$: double := $m_f - m_e$, $c_f - c_e$;
+
+if $|\Delta m| > \epsilon$ then
+  // If the gradients of the source and destination
+  // edges are different, then we get a combination
+  // of step up/step down links. We want to find:
+  // (a) The point walkX where $y_f$ = $y_e$
+  // (b) The point stepUpX where $y_f - y_e = \mbox{STEPTOL}$
+  // (c) The point stepDownX where $y_e - y_f = \mbox{STEPTOL}$
+  var walkX: double := $-\Delta c / \Delta m$;
+  var stepUpX: double := $(\mbox{STEPTOL} - \Delta c) / \Delta m$;
+  var stepDownX: double := $(-\mbox{STEPTOL} - \Delta c) / \Delta m$;
+
+  // Construct the step down and step up intervals
+  // and clip them to the known x overlap interval.
+  var sdI, suI: Interval
+    := $\left[ \min\{\mbox{walkX},\mbox{stepDownX}\}, \max\{\mbox{walkX},\mbox{stepDownX}\} \right]$,
+	   $\left[ \min\{\mbox{walkX},\mbox{stepUpX}\}, \max\{\mbox{walkX},\mbox{stepUpX}\} \right]$;
+  sdI := sdI $\cap$ xO;
+  suI := suI $\cap$ xO;
+
+  // Construct the link segments.
+  if not sdI.empty then
+    result.downToF :=
+      $\left[(\mbox{sdI.low}, m_e * \mbox{sdI.low} + c_e)\right.,$
+      $\left.(\mbox{sdI.high}, m_e * \mbox{sdI.high} + c_e)\right]$;
+    result.upToE :=
+      $\left[(\mbox{sdI.low}, m_f * \mbox{sdI.low} + c_f)\right.,$
+      $\left.(\mbox{sdI.high}, m_f * \mbox{sdI.high} + c_f)\right]$;
+  if not suI.empty then <analogously>
+else if $|\Delta c| < \mbox{STEPTOL}$ then
+  // If the gradients of the source and destination
+  // edges are the same (i.e. parallel edges), then
+  // we either get a step up/step down combination,
+  // or a walk link in either direction.
+  var $\mathbf{s_1}$: Vec2 := $(\mbox{xO.low}, m_e * \mbox{xO.low} + c_e)$;
+  var $\mathbf{s_2}$: Vec2 := $(\mbox{xO.high}, m_e * \mbox{xO.high} + c_e)$;
+  var $\mathbf{d_1}$: Vec2 := $(\mbox{xO.low}, m_f * \mbox{xO.low} + c_f)$;
+  var $\mathbf{d_2}$: Vec2 := $(\mbox{xO.high}, m_f * \mbox{xO.high} + c_f)$;
+
+  if $\Delta c > \epsilon$ then
+    // The destination is higher than the source.
+    result.upToF := $\left[\mathbf{s_1},\mathbf{s_2}\right]$;
+	result.downToE := $\left[\mathbf{d_1},\mathbf{d_2}\right]$;
+  else if $\Delta c < -\epsilon$ then
+    // The destination is lower than the source.
+    result.downToF := $\left[\mathbf{s_1},\mathbf{s_2}\right]$;
+	result.upToE := $\left[\mathbf{d_1},\mathbf{d_2}\right]$;
+  else
+    // The destination and source are level.
+    result.walk := $\left[\mathbf{s_1},\mathbf{s_2}\right]$;
