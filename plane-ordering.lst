@@ -14,7 +14,7 @@ if dotProd > 1.0 then dotProd := 1.0;
 
 var angle: double := $\cos^{-1}$(dotProd);
 var dist: double := dL - dR;
-if fabs(angle) < ATOL and fabs(dist) < DTOL then
+if fabs(angle) < $\epsilon_{\mbox{angle}}$ and fabs(dist) < $\epsilon_{\mbox{dist}}$ then
   return false;
 
 var aL, bL, cL: double := nL.x, nL.y, nL.z;

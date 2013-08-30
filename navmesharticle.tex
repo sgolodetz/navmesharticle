@@ -201,7 +201,7 @@ As explained in \cite{vanwaveren01}, the concept of configuration space can be e
 
 Having expanded the brushes of a brush-based environment to construct a configuration space for an AABB in the manner described, the next step is to union the expanded brushes together to generate a set of polygons that represent the expanded environment as a whole. These polygons can then be processed further to construct a navigation mesh.
 
-In conceptual terms, the process of brush unioning is relatively simple: given an input set of brushes, each of which consists of a set of (outward-facing) polygonal faces, it suffices to clip each brush face to all the other brushes within range of its own brush in the environment (see Figure~\ref{?}). From an implementation perspective, a convenient way to do this is to build a binary space partitioning (BSP) tree for each brush and clip each face to the trees of the other brushes. The high-level implementation of this process can be found in Listing~\ref{code:brush-unioning} and full source code is available online \cite{hesperus}. The end result is a set of polygons that represent the expanded environment.
+In conceptual terms, the process of brush unioning is relatively simple: given an input set of brushes, each of which consists of a set of (outward-facing) polygonal faces, it suffices to clip each brush face to all the other brushes within range of its own brush in the environment. From an implementation perspective, a convenient way to do this is to build a binary space partitioning (BSP) tree for each brush and clip each face to the trees of the other brushes. The high-level implementation of this process can be found in Listing~\ref{code:brush-unioning} and full source code is available online \cite{hesperus}. The end result is a set of polygons that represent the expanded environment.
 
 %---
 \begin{stulisting}[t]
@@ -329,16 +329,16 @@ Normalising this to give $\mathbf{\hat{n}} = \mathbf{n} / \left|\mathbf{n}\right
 To generate walk and step links, we transform each ordered pair of opposing edges that lie in the same (canonical) plane into a 2D (orthonormal) coordinate system on the plane, and then determine the intervals (if any) in which links need to be created. A suitable 2D coordinate system for a plane $\mathbf{\hat{n}} \cdot \mathbf{x} - d = 0$ can be generated as follows. To determine a suitable origin $\mathbf{o'}$ for our coordinate system, we find the point on the plane that lies nearest to the world origin $\mathbf{0}$: this is simply $d\mathbf{\hat{n}}$. Given that the plane is vertical, suitable axis vectors for our coordinate system can be defined as:
 %
 \[
-\mathbf{i'} = \frac{\mathbf{\hat{n}} \times \mathbf{\hat{u}}}{\left| \mathbf{\hat{n}} \times \mathbf{\hat{u}} \right|}
+\mathbf{\hat{i'}} = \frac{\mathbf{\hat{n}} \times \mathbf{\hat{u}}}{\left| \mathbf{\hat{n}} \times \mathbf{\hat{u}} \right|}
 \]
 \[
-\mathbf{j'} = \mathbf{\hat{u}}
+\mathbf{\hat{j'}} = \mathbf{\hat{u}}
 \]
 %
-This gives us a coordinate system in which $i'$ is horizontal (in terms of the surrounding world) and $j'$ is vertical. To transform an edge $e$ on the plane into this new coordinate system, we transform each of its endpoints $\mathbf{e_1}$ and $\mathbf{e_2}$ as follows:
+This gives us a coordinate system in which $\mathbf{\hat{i'}}$ is horizontal (in terms of the surrounding world) and $\mathbf{\hat{j'}}$ is vertical. To transform an edge $e$ on the plane into this new coordinate system, we transform each of its endpoints $\mathbf{e_1}$ and $\mathbf{e_2}$ as follows:
 %
 \[
-\mathbf{e_n} \mapsto ((\mathbf{e_n} - \mathbf{o'}) \cdot \mathbf{i'}, (\mathbf{e_n} - \mathbf{o'}) \cdot \mathbf{j'}) = \mathbf{e'_n}
+\mathbf{e_n} \mapsto ((\mathbf{e_n} - \mathbf{o'}) \cdot \mathbf{\hat{i'}}, (\mathbf{e_n} - \mathbf{o'}) \cdot \mathbf{\hat{j'}}) = \mathbf{e'_n}
 \]
 %
 Having transformed a pair of opposing edges $e$ and $f$ into the plane's coordinate system, we next calculate the horizontal interval in which each edge lies; e.g.~for $e$ this would be:
@@ -359,7 +359,7 @@ c_e = e'_{1y} - m_e * e'_{1x}
 Based on a comparison of the gradients, we then create the link segments in the plane as shown in Listing~\ref{code:linksegment-calculation} and Figure~\ref{fig:linkcreation}. The endpoints $\mathbf{\ell_1}$ and $\mathbf{\ell_2}$ of each link segment can be straightforwardly transformed back into world space to create the actual links as follows:
 %
 \[
-\mathbf{\ell_n} \mapsto \mathbf{o'} + \ell_{nx} * \mathbf{i'} + \ell_{ny} * \mathbf{j'}
+\mathbf{\ell_n} \mapsto \mathbf{o'} + \ell_{nx} * \mathbf{\hat{i'}} + \ell_{ny} * \mathbf{\hat{j'}}
 \]
 
 \section{Potential Extensions}
@@ -392,7 +392,7 @@ Navigation mesh \emph{generation}, however, is only part of the picture -- in a 
 
 As always, I would like to thank the Overload team for reviewing and helping to improve this article.
 
-%\nocite{*}
+\clearpage
 
 \bibliographystyle{plain}
 \bibliography{navmesh}
