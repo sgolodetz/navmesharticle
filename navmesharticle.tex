@@ -241,7 +241,33 @@ To generate simple links between walkable polygons in a navigation mesh, the gen
 \end{stulisting}
 %---
 
-The edge plane table is a map of type $\mbox{Plane} \to (\{\mbox{Edge}\},\{\mbox{Edge}\})$. To construct it, we proceed as shown in Listing~\ref{code:ept-construction}. For each edge of a walkable polygon, we first build the vertical plane passing through it and then add it to the table based on its facing with regard to the `canonical' vertical plane through the edge. This has the effect of separating the edges of walkable polygons into two sets on each vertical plane that can then be checked against each other in a pairwise manner to create navigation links -- see Figure~\ref{?} for an example. A few details are needed to make this work:
+%---
+\begin{stusubfig}{!t}
+	\subfigure[The navigation mesh for \emph{Ramp}]
+	{\includegraphics[width=.4\linewidth]{ramp-mesh-clearer.png}}%
+	%
+	\hspace{4mm}%
+	%
+	\subfigure[A top-down view, with some edges highlighted]
+	{\includegraphics[width=.4\linewidth]{ramp-topdown.png}}%
+	%
+	\\
+	%
+	\subfigure[The part of the edge plane table corresponding to the highlighted edges]
+	{
+\begin{tabular}{c|cc}
+\textbf{Plane} & \textbf{Same-Facing Edges} & \textbf{Opposite-Facing Edges} \\
+\hline
+1 & $\{e_1,e_2\}$ & $\{e_3\}$ \\
+2 & $\{e_4\}$ & $\{e_5\}$
+\end{tabular}
+	}
+\caption{An illustration of (part of) an edge plane table for the \emph{hesperus} test level called \emph{Ramp}: the ordered pairs of opposing edges are $(e_1,e_3)$, $(e_2,e_3)$, $(e_3,e_1)$, $(e_3,e_2)$, $(e_4,e_5)$ and $(e_5,e_4)$. The first four pairs will cause walk links to be created; the last two pairs will cause step links to be created.}
+\label{fig:edgeplanetable}
+\end{stusubfig}
+%---
+
+The edge plane table is a map of type $\mbox{Plane} \to (\{\mbox{Edge}\},\{\mbox{Edge}\})$. To construct it, we proceed as shown in Listing~\ref{code:ept-construction}. For each edge of a walkable polygon, we first build the vertical plane passing through it and then add it to the table based on its facing with regard to the `canonical' vertical plane through the edge. This has the effect of separating the edges of walkable polygons into two sets on each vertical plane that can then be checked against each other in a pairwise manner to create navigation links -- see Figure~\ref{fig:edgeplanetable} for an example. A few details are needed to make this work:
 %
 \begin{enumerate}
 
