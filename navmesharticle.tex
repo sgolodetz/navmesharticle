@@ -127,13 +127,19 @@ tabsize=4
 
 \section{Introduction}
 
-The representation of the walkable area of a 3D environment in such a way as to facilitate successful navigation by intelligent agents is an important problem in the computer games and artificial intelligence fields, and it has been extensively studied. As surveyed by Tozour \cite{tozour04}, there are a variety of common ways to represent such an environment, including regular grids, which support random-access lookup but do not translate easily into a 3D context, use a lot of memory and can yield aesthetically unpleasing paths; waypoint graphs -- connecting large numbers of nodes (often manually placed) with edges that imply walkability in the game world -- these were previously popular in games but are costly to build and tend to constrain agents to walking `on rails' between connected waypoints; space-filling volumes, which entail growing randomly-placed seeds to try and fill the free space in the level; and navigation meshes, that represent the walkable surface of a world explicitly using a polygonal mesh. Polygons within a navigation mesh are connected using links that imply the ability of the agent to walk/step/jump/etc.\ between them (see Figure~\ref{fig:navmeshexample}).
+The representation of the walkable area of a 3D environment in such a way as to facilitate successful navigation by intelligent agents is an important problem in the computer games and artificial intelligence fields, and it has been extensively studied. As surveyed by Tozour \cite{tozour04}, there are a variety of common ways to represent such an environment, including:
+%
+\begin{itemize}
+\item \emph{Regular Grids.} These support random-access lookup but do not translate easily into a 3D context. They also use a lot of memory and can yield aesthetically unpleasing paths for navigating agents.
+\item \emph{Waypoint Graphs.} These connect large numbers of nodes (often manually placed) using edges that imply walkability in the game world. They were previously popular in games but are costly to build and tend to constrain agents to walking `on rails' between connected waypoints.
+\item \emph{Navigation Meshes.} These represent the walkable surface of a world explicitly using a polygonal mesh. Polygons within a navigation mesh are connected using links that imply the ability of the agent to walk/step/jump/etc.\ between them (see Figure~\ref{fig:navmeshexample}).
+\end{itemize}
 
 %---
 \stufigex{width=.9\linewidth}{blakeney-upperramp-clearer.png}{An example navigation mesh and its links: cyan = walk link; magenta = step up link; yellow = step down link.}{fig:navmeshexample}{t}
 %---
 
-Since their introduction by Greg Snook \cite{snook00}, navigation meshes have proved to be a particularly successful approach due to their ability to represent the free space available around paths through the world (this is extremely useful because it provides the pathfinder with the information it needs to successfully avoid local obstacles). As a result, they have seen widespread use in both games themselves, and popular games engines such as Source and Unreal, and many games authors have contributed to their theoretical development (most notably in the \emph{Game Programming Gems} and \emph{AI Game Programming Wisdom} book series). There has also been significant interest from researchers in academia (e.g.~see \cite{hale09,kallmann10,pettre05,vantoll11}).
+\noindent Since their introduction by Greg Snook \cite{snook00}, navigation meshes have proved to be a particularly successful approach due to their ability to represent the free space available around paths through the world (this is extremely useful because it provides the pathfinder with the information it needs to successfully avoid local obstacles). As a result, they have seen widespread use in both games themselves, and popular games engines such as Source and Unreal, and many games authors have contributed to their theoretical development (most notably in the \emph{Game Programming Gems} and \emph{AI Game Programming Wisdom} book series). There has also been significant interest from researchers in academia (e.g.~see \cite{hale09,kallmann10,pettre05,vantoll11}).
 
 %---
 \begin{stusubfig}{!t}
@@ -154,16 +160,16 @@ Since their introduction by Greg Snook \cite{snook00}, navigation meshes have pr
 \end{stusubfig}
 %---
 
-One facet of using navigation meshes is how to build them in the first place, and numerous methods have been described in the literature, of which a few examples are described here. An early approach due to Tozour \cite{tozour02} works by first determining the walkable polygons in a 3D environment by comparing their normals with the up vector, and then iteratively merging together as many polygons as possible using the Hertel-Mehlhorn algorithm \cite{hertel83,orourke94} and a $3 \rightarrow 2$ merging technique. Hamm \cite{hamm08} generates a navigation mesh using an empirical method that involves sampling the environment to create a grid of points, identifying a subset of points both on the boundary of and within the environment, and connecting these points to form a mesh. Ratcliff \cite{ratcliff08} creates a navigation mesh by tessellating all walkable surfaces in the world, merging the results together to form suitable nodes and then computing links between neighbouring nodes. Van Toll \emph{et al.} \cite{vantoll11} build a navigation mesh for a multi-layer environment by constructing a mesh based on the medial axis for each layer and then connecting the medial axes by `opening' the connections between the layers. The same authors later demonstrated how such a mesh could be dynamically modified \cite{vantoll12}. Mononen's open-source Recast library \cite{mononen09} first voxelizes the 3D environment before running a watershed transform \cite{beucher90,gonzalez02} on the walkable voxels and creating a mesh from the resulting partition of the walkable surface.
+One facet of using navigation meshes is how to build them in the first place, and numerous methods have been described in the literature. An early approach due to Tozour \cite{tozour02} works by first determining the walkable polygons in a 3D environment by comparing their normals with the up vector, and then iteratively merging together as many polygons as possible using the Hertel-Mehlhorn algorithm \cite{hertel83,orourke94} and a $3 \rightarrow 2$ merging technique. Hamm \cite{hamm08} generates a navigation mesh using an empirical method that involves sampling the environment to create a grid of points, identifying a subset of points both on the boundary of and within the environment, and connecting these points to form a mesh. Ratcliff \cite{ratcliff08} creates a navigation mesh by tessellating all walkable surfaces in the world, merging the results together to form suitable nodes and then computing links between neighbouring nodes. Van Toll \emph{et al.} \cite{vantoll11} build a navigation mesh for a multi-layer environment by constructing a mesh based on the medial axis for each layer and then connecting the medial axes by `opening' the connections between the layers. The same authors also demonstrate how such a mesh can be dynamically modified \cite{vantoll12}. Mononen's open-source Recast library \cite{mononen09} first voxelizes the 3D environment before running a watershed transform \cite{beucher90,gonzalez02} on the walkable voxels and creating a mesh from the resulting partition of the walkable surface.
 
 %TODO: Survey the various methods \cite{axelrod08,farnstrom06,hale11,kallmann10,mcanlis08,mononen09,oliva11,pettre05,ratcliff08,vanwaveren01,wein05}.
 
-In this article, I describe the implementation of navigation mesh construction in my homemade \emph{hesperus} engine \cite{hesperus}, based heavily on the approach of van Waveren in \cite{vanwaveren01}. The goal is to provide a helpful, implementation-focused introduction for those with no prior experience in the area. At a high-level, the method is as follows:
+In this article, I describe the implementation of navigation mesh construction in my homemade \emph{hesperus} engine \cite{hesperus}, based heavily on the techniques of van Waveren in \cite{vanwaveren01}. The goal is to provide a helpful, implementation-focused introduction for those with no prior experience in the area. At a high-level, the method is as follows:
 %
 \begin{enumerate}
-\item Given a 3D environment made up of brushes (simple convex polyhedra, each consisting of a set of polygonal faces), and a set of axis-aligned bounding boxes (AABBs) used to represent the possible sizes of the agents that will navigate the environment, expand the brushes by appropriate amounts (see \S\ref{sec:configspace}) to create a set of expanded brushes for each AABB.
-\item Using constructive solid geometry (CSG) techniques, union the expanded brushes for each AABB together to form a polygonal environment. Filter the polygons of the environment to find those that are \emph{walkable} (judged by comparing their face normals with the up vector). This gives us the polygons of a navigation mesh for each AABB, but without any links to indicate how agents should navigate between them. See \S\ref{sec:meshgen}.
-\item Generate walk and step links between the polygons of each navigation mesh (see \S\ref{sec:walkstep}) -- these indicate, respectively, that an agent can walk from one polygon of the mesh to another, or step up/down from one polygon to another. These links can be used to generate a graph for the purposes of path planning.
+\item Firstly, given a 3D environment made up of brushes (simple convex polyhedra, each consisting of a set of polygonal faces), and a set of axis-aligned bounding boxes (AABBs) used to represent the possible sizes of the agents that will navigate the environment, expand the brushes by appropriate amounts (see \S\ref{sec:configspace}) to create a set of expanded brushes for each AABB.
+\item Next, using constructive solid geometry (CSG) techniques, union the expanded brushes for each AABB together to form a polygonal environment. Filter the polygons of the environment to find those that are \emph{walkable} (judged by comparing their face normals with the up vector). This gives us the polygons of a navigation mesh for each AABB, but without any links to indicate how agents should navigate between them. See \S\ref{sec:meshgen}.
+\item Finally, generate walk and step links between the polygons of each navigation mesh (see \S\ref{sec:walkstep}) -- these indicate, respectively, that an agent can walk from one polygon of the mesh to another, or step up/down from one polygon to another. These links can be used to generate a graph for the purposes of path planning.
 \end{enumerate}
 %
 The following sections look at each of these steps in more detail.
@@ -185,7 +191,7 @@ The following sections look at each of these steps in more detail.
 	%
 	\subfigure[A bevel plane]
 	{\includegraphics[width=.3\linewidth]{configspace-bevel.png}}%
-\caption{A configuration space can be generated for the entirety of a brush-based environment by expanding all of the brushes by an appropriate amount: (a) shows a brush-based environment, together with the range of movement of a simple agent; (b) shows the configuration space that would be generated for that agent; (c) shows that expanding non-axis-aligned brushes may require \emph{bevel} planes (shown in green) in order to correctly determine the range of movement.}
+\caption{A configuration space can be generated for the entirety of a brush-based environment by expanding all of the brushes by an appropriate amount: (a) shows a brush-based environment, together with the range of movement of a simple agent; (b) shows the configuration space that would be generated for the centre of that agent; (c) shows that expanding non-axis-aligned brushes may require \emph{bevel} planes (shown in green) in order to correctly determine the range of movement.}
 \label{fig:configspace}
 \end{stusubfig}
 %---
@@ -211,6 +217,14 @@ In conceptual terms, the process of brush unioning is relatively simple: given a
 \end{stulisting}
 %---
 
+%---
+\begin{stulisting}[t]
+\caption{Edge Plane Table Construction}
+\label{code:ept-construction}
+\lstinputlisting[style=Default]{ept-construction.lst}
+\end{stulisting}
+%---
+
 \subsection{Finding Walkable Polygons}
 
 Given the set of polygons generated in the previous section, finding those polygons that are \emph{walkable} is straightforward: it suffices to compare the angle between each polygon's normal, $\mathbf{\hat{n}}$ and the up vector ($\mathbf{\hat{u}} = (0,0,1)^T$) to some predefined threshold. The angle can be computed using the dot product:
@@ -233,6 +247,7 @@ To generate simple links between walkable polygons in a navigation mesh, the gen
 
 \subsection{Edge Plane Table Construction}
 
+\iffalse
 %---
 \begin{stulisting}[t]
 \caption{Edge Plane Table Construction}
@@ -240,6 +255,7 @@ To generate simple links between walkable polygons in a navigation mesh, the gen
 \lstinputlisting[style=Default]{ept-construction.lst}
 \end{stulisting}
 %---
+\fi
 
 %---
 \begin{stusubfig}{!t}
@@ -262,16 +278,16 @@ To generate simple links between walkable polygons in a navigation mesh, the gen
 2 & $\{e_4\}$ & $\{e_5\}$
 \end{tabular}
 	}
-\caption{An illustration of (part of) an edge plane table for the \emph{hesperus} test level called \emph{Ramp}: the ordered pairs of opposing edges are $(e_1,e_3)$, $(e_2,e_3)$, $(e_3,e_1)$, $(e_3,e_2)$, $(e_4,e_5)$ and $(e_5,e_4)$. The first four pairs will cause walk links to be created; the last two pairs will cause step links to be created.}
+\caption{An illustration of (part of) the edge plane table for the \emph{hesperus} test level called \emph{Ramp}: the ordered pairs of opposing edges are $(e_1,e_3)$, $(e_2,e_3)$, $(e_3,e_1)$, $(e_3,e_2)$, $(e_4,e_5)$ and $(e_5,e_4)$. The first four pairs will cause walk links to be created; the last two pairs will cause step links to be created.}
 \label{fig:edgeplanetable}
 \end{stusubfig}
 %---
 
-The edge plane table is a map of type $\mbox{Plane} \to (\{\mbox{Edge}\},\{\mbox{Edge}\})$. To construct it, we proceed as shown in Listing~\ref{code:ept-construction}. For each edge of a walkable polygon, we first build the vertical plane passing through it and then add it to the table based on its facing with regard to the `canonical' vertical plane through the edge. This has the effect of separating the edges of walkable polygons into two sets on each vertical plane that can then be checked against each other in a pairwise manner to create navigation links -- see Figure~\ref{fig:edgeplanetable} for an example. A few details are needed to make this work:
+The edge plane table is a map of type $\mbox{Plane} \to (\{\mbox{Edge}\},\{\mbox{Edge}\})$. To construct it, we proceed as shown in Listing~\ref{code:ept-construction}. For each edge of a walkable polygon, we first build the vertical plane passing through it and then add it to the table based on its facing with regard to the `canonical' vertical plane through the edge. This has the effect of separating the edges of walkable polygons into two sets on each vertical plane. These can then be checked against each other in a pairwise manner to create navigation links -- see Figure~\ref{fig:edgeplanetable} for an example. A few details are needed to make this work:
 %
 \begin{enumerate}
 
-\item \emph{Vertical Plane Construction}. The edge is necessarily non-vertical (because it belongs to a walkable polygon), so the normal vector of the vertical plane can be calculated straightforwardly using a cross-product. If the endpoints of the edge are $\mathbf{p_1}$ and $\mathbf{p_2}$, and $\mathbf{\hat{u}}$ is once again the up vector, then the desired normal can be calculated as:
+\item \emph{Vertical Plane Construction}. Each edge is necessarily non-vertical (because it belongs to a walkable polygon), so the normal vector of a vertical plane through it can be calculated straightforwardly using the cross-product. If the endpoints of the edge are $\mathbf{p_1}$ and $\mathbf{p_2}$, and $\mathbf{\hat{u}}$ is once again the up vector, then the desired normal can be calculated as:
 %
 \[
 \mathbf{n} = (\mathbf{p_2} - \mathbf{p_1}) \times \mathbf{\hat{u}}
@@ -289,6 +305,28 @@ Normalising this to give $\mathbf{\hat{n}} = \mathbf{n} / \left|\mathbf{n}\right
 
 \end{enumerate}
 
+\subsection{Link Creation}
+
+%---
+\begin{stusubfig}{!t}
+        \subfigure[]
+        {\includegraphics[width=.3\linewidth]{linkcreation-a}}%
+        %
+        \hspace{4mm}%
+        %
+        \subfigure[]
+        {\includegraphics[width=.3\linewidth]{linkcreation-b}}%
+        %
+        \hspace{4mm}%
+        %
+        \subfigure[]
+        {\includegraphics[width=.3\linewidth]{linkcreation-c}}%
+\caption{Creating links between edges: in (a), the gradients differ and a step down link is created from $e$ to $f$ in the region labelled sdI, and a step up link is created in the region labelled suI; in (b), the gradients are the same and a step up link is created from $e$ to $f$ in the region labelled xOverlap; in (c), a step down link is created from $e$ to $f$ in the region labelled xOverlap. The remaining case, of parallel edges leading to a walk link, is not shown.}
+\label{fig:linkcreation}
+\end{stusubfig}
+%---
+
+\iffalse
 %---
 \begin{stulisting}[t]
 \caption{Plane Ordering}
@@ -297,8 +335,6 @@ Normalising this to give $\mathbf{\hat{n}} = \mathbf{n} / \left|\mathbf{n}\right
 \end{stulisting}
 %---
 
-\subsection{Link Creation}
-
 %---
 \begin{stulisting}[!t]
 \caption{Link Segment Calculation}
@@ -306,27 +342,9 @@ Normalising this to give $\mathbf{\hat{n}} = \mathbf{n} / \left|\mathbf{n}\right
 \lstinputlisting[style=Default]{linksegment-calculation.lst}
 \end{stulisting}
 %---
+\fi
 
-%---
-\begin{stusubfig}{!t}
-	\subfigure[]
-	{\includegraphics[width=.3\linewidth]{linkcreation-a}}%
-	%
-	\hspace{4mm}%
-	%
-	\subfigure[]
-	{\includegraphics[width=.3\linewidth]{linkcreation-b}}%
-	%
-	\hspace{4mm}%
-	%
-	\subfigure[]
-	{\includegraphics[width=.3\linewidth]{linkcreation-c}}%
-\caption{Creating links between edges: in (a), a step down link is created from $e$ to $f$ in the region labelled sdI, and a step up link is created in the region labelled suI; in (b), a step up link is created from $e$ to $f$ in the region labelled xOverlap; in (c), a step down link is created from $e$ to $f$ in the region labelled xOverlap. The remaining case of parallel edges leading to a walk link is not shown.}
-\label{fig:linkcreation}
-\end{stusubfig}
-%---
-
-To generate walk and step links, we transform each ordered pair of opposing edges that lie in the same (canonical) plane into a 2D (orthonormal) coordinate system on the plane, and then determine the intervals (if any) in which links need to be created. A suitable 2D coordinate system for a plane $\mathbf{\hat{n}} \cdot \mathbf{x} - d = 0$ can be generated as follows. To determine a suitable origin $\mathbf{o'}$ for our coordinate system, we find the point on the plane that lies nearest to the world origin $\mathbf{0}$: this is simply $d\mathbf{\hat{n}}$. Given that the plane is vertical, suitable axis vectors for our coordinate system can be defined as:
+To generate walk and step links, we transform each ordered pair\footnotemark{} of opposing edges that lie in the same (canonical) plane into a 2D (orthonormal) coordinate system in the plane, and then determine the intervals (if any) in which links need to be created. A suitable 2D coordinate system for a plane $\mathbf{\hat{n}} \cdot \mathbf{x} - d = 0$ can be generated as follows. To determine a suitable origin $\mathbf{o'}$ for our coordinate system, we find the point on the plane that lies nearest to the world origin $\mathbf{0}$: this is simply $d\mathbf{\hat{n}}$. Given that the plane is vertical, suitable axis vectors for our coordinate system can be defined as:
 %
 \[
 \mathbf{\hat{i'}} = \frac{\mathbf{\hat{n}} \times \mathbf{\hat{u}}}{\left| \mathbf{\hat{n}} \times \mathbf{\hat{u}} \right|}
@@ -362,17 +380,27 @@ Based on a comparison of the gradients, we then create the link segments in the 
 \mathbf{\ell_n} \mapsto \mathbf{o'} + \ell_{nx} * \mathbf{\hat{i'}} + \ell_{ny} * \mathbf{\hat{j'}}
 \]
 
+\footnotetext{Note that because the pairs are ordered, we consider each unordered pair of edges twice when creating links, once in each direction.}
+
 \section{Potential Extensions}
 
 At present, only walk and step links are implemented in \emph{hesperus}, but there are various additional links that it would be helpful to add.
 
 \subsection{Crouch Links}
 
-One obvious extension is to add \emph{crouch} links -- these are links that tell agents when they need to crouch in order to traverse low areas (e.g.~a low archway or a pipe). As the example in Figure~\ref{fig:crouchlinks} illustrates, these are inter-mesh links; they should be created so as to link the standing and crouching meshes for an agent at the boundary of areas that can be traversed on the crouching mesh but not on the standing one. Assuming that the AABBs for the two meshes differ only in their heights (as is the case in the example), one way of automatically detecting crouch links would be to match edges on the standing mesh that do not cause any walk or step links to be created with edges in the same plane on the crouching mesh that do.
+%---
+\begin{stulisting}[!t]
+\caption{Plane Ordering}
+\label{code:plane-ordering}
+\lstinputlisting[style=Default]{plane-ordering.lst}
+\end{stulisting}
+%---
 
 %---
 \stufigex{width=.9\linewidth}{crouchlinks.png}{Creating crouch links between navigation meshes can allow tall characters to pass through low areas. Here, crouch links should be created between the standing (green) and crouching (red) meshes to allow agents to traverse this low archway.}{fig:crouchlinks}{t}
 %---
+
+One obvious extension is to add \emph{crouch} links -- these are links that tell agents when they need to crouch in order to traverse low areas (e.g.~a low archway or a pipe). As the example in Figure~\ref{fig:crouchlinks} illustrates, these are inter-mesh links; they should be created so as to link the standing and crouching meshes for an agent at the boundary of areas that can be traversed on the crouching mesh but not on the standing one. Assuming that the AABBs for the two meshes differ only in their heights (as is the case in the example), one way of automatically detecting crouch links would be to match edges on the standing mesh that do not cause any walk or step links to be created with edges in the same plane on the crouching mesh that do.
 
 \subsection{Ladder Links}
 
@@ -380,17 +408,25 @@ The addition of ladder links (indicating that an agent can travel from one floor
 
 \subsection{Jump Links}
 
-A third type of extremely useful link would be the jump link -- these are used to indicate places at which an agent can jump to reach another part of the navigation mesh. Calculating jump links can be somewhat costly because it involves simulating the agent making jumps to determine whether or not they are possible. In our case, the situation is made slightly easier because we are working in configuration space and can avoid worrying about clearance, but general-purpose jump links are still non-trivial to generate automatically. One easy type of jump link that could be generated immediately would be vertical jumps -- these can be generated in the same way as step up links, but using a larger height threshold.
+A third type of extremely useful link would be jump links -- these are used to indicate places at which an agent can jump to reach another part of the navigation mesh. Calculating jump links can be somewhat costly because it involves simulating the agent making jumps to determine whether or not they are possible. In our case, the situation is made slightly easier because we are working in configuration space and can avoid worrying about clearance, but general-purpose jump links are still non-trivial to generate automatically. One easy type of jump link that could be generated immediately would be vertical jumps -- these can be generated in the same way as step up links, but using a larger height threshold.
 
 \section{Conclusions}
 
-In this article, I have illustrated how to generate navigation meshes at an implementation level using an approach based on the work of van Waveren in \cite{vanwaveren01}. Whilst there are many alternative techniques for navigation mesh construction, as described in the introduction, this configuration space approach is useful because it allows us to avoid the difficulties regarding clearance height that have to be dealt with by other approaches; it also means that each agent occupies a single point on the mesh, completely avoiding the problems caused by an agent straddling multiple mesh polygons.
+In this article, I have illustrated how to generate navigation meshes at an implementation level using an approach based on the work of van Waveren in \cite{vanwaveren01}. Whilst there are many alternative techniques for navigation mesh construction, as surveyed in the introduction, this configuration space approach is useful because it allows us to avoid the difficulties regarding clearance height that have to be dealt with by other approaches; it also means that each agent occupies a single point on the mesh, completely avoiding the problems caused by an agent straddling multiple mesh polygons.
 
 Navigation mesh \emph{generation}, however, is only part of the picture -- in a future article, I hope to write more about using navigation meshes for localisation, movement and path planning.
 
 \section{Acknowledgements}
 
-As always, I would like to thank the Overload team for reviewing and helping to improve this article.
+As always, I would like to thank the Overload team for reviewing this article and suggesting ways in which to improve it.
+
+%---
+\begin{stulisting}[!t]
+\caption{Link Segment Calculation}
+\label{code:linksegment-calculation}
+\lstinputlisting[style=Default]{linksegment-calculation.lst}
+\end{stulisting}
+%---
 
 \clearpage
 
