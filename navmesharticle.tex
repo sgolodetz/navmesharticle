@@ -227,7 +227,7 @@ In conceptual terms, the process of brush unioning is relatively simple: given a
 
 \subsection{Finding Walkable Polygons}
 
-Given the set of polygons generated in the previous section, finding those polygons that are \emph{walkable} is straightforward: it suffices to compare the angle between each polygon's normal, $\mathbf{\hat{n}}$ and the up vector ($\mathbf{\hat{u}} = (0,0,1)^T$) to some predefined threshold. The angle can be computed using the dot product:
+Given the set of polygons generated in the previous section, finding those polygons that are \emph{walkable} is straightforward: it suffices to compare the angle between each polygon's normal, $\mathbf{\hat{n}}$, and the up vector ($\mathbf{\hat{u}} = (0,0,1)^T$) to some predefined threshold. The angle can be computed using the dot product:
 %
 \[
 \theta = \cos^{-1} \left( \mathbf{\hat{n}} \cdot \mathbf{\hat{u}} \right)
@@ -246,16 +246,6 @@ To generate simple links between walkable polygons in a navigation mesh, the gen
 \end{enumerate}
 
 \subsection{Edge Plane Table Construction}
-
-\iffalse
-%---
-\begin{stulisting}[t]
-\caption{Edge Plane Table Construction}
-\label{code:ept-construction}
-\lstinputlisting[style=Default]{ept-construction.lst}
-\end{stulisting}
-%---
-\fi
 
 %---
 \begin{stusubfig}{!t}
@@ -325,24 +315,6 @@ Normalising this to give $\mathbf{\hat{n}} = \mathbf{n} / \left|\mathbf{n}\right
 \label{fig:linkcreation}
 \end{stusubfig}
 %---
-
-\iffalse
-%---
-\begin{stulisting}[t]
-\caption{Plane Ordering}
-\label{code:plane-ordering}
-\lstinputlisting[style=Default]{plane-ordering.lst}
-\end{stulisting}
-%---
-
-%---
-\begin{stulisting}[!t]
-\caption{Link Segment Calculation}
-\label{code:linksegment-calculation}
-\lstinputlisting[style=Default]{linksegment-calculation.lst}
-\end{stulisting}
-%---
-\fi
 
 To generate walk and step links, we transform each ordered pair\footnotemark{} of opposing edges that lie in the same (canonical) plane into a 2D (orthonormal) coordinate system in the plane, and then determine the intervals (if any) in which links need to be created. A suitable 2D coordinate system for a plane $\mathbf{\hat{n}} \cdot \mathbf{x} - d = 0$ can be generated as follows. To determine a suitable origin $\mathbf{o'}$ for our coordinate system, we find the point on the plane that lies nearest to the world origin $\mathbf{0}$: this is simply $d\mathbf{\hat{n}}$. Given that the plane is vertical, suitable axis vectors for our coordinate system can be defined as:
 %
